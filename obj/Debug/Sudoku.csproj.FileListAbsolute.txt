@@ -42,3 +42,15 @@ C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.csproj.CoreCompileInputs.cache
 C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.exe
 C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.pdb
 C:\Users\ayu\source\repos\Sudoku\obj\Debug\Sudoku.Form2.resources
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\bin\Debug\Sudoku.exe.config
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\bin\Debug\Sudoku.exe
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\bin\Debug\Sudoku.pdb
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.csproj.AssemblyReference.cache
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.exe.config
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.Sudoku.resources
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.Form2.resources
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.Properties.Resources.resources
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.csproj.GenerateResource.cache
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.csproj.CoreCompileInputs.cache
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.exe
+C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.pdb

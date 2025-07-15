@@ -40,8 +40,7 @@
 			// GameTitle
 			// 
 			this.GameTitle.AutoSize = true;
-			this.GameTitle.Font = new System.Drawing.Font("Comic Sans MS", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.GameTitle.Location = new System.Drawing.Point(34, 32);
+            this.GameTitle.Font = new System.Drawing.Font("Arial", 20.25F, System.Drawing.FontStyle.Bold); this.GameTitle.Location = new System.Drawing.Point(34, 32);
 			this.GameTitle.Name = "GameTitle";
 			this.GameTitle.Size = new System.Drawing.Size(280, 38);
 			this.GameTitle.TabIndex = 0;
@@ -50,8 +49,7 @@
 			// EasyRadio
 			// 
 			this.EasyRadio.AutoSize = true;
-			this.EasyRadio.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.EasyRadio.Location = new System.Drawing.Point(311, 95);
+            this.EasyRadio.Font = new System.Drawing.Font("Arial", 12F); this.EasyRadio.Location = new System.Drawing.Point(311, 95);
 			this.EasyRadio.Name = "EasyRadio";
 			this.EasyRadio.Size = new System.Drawing.Size(129, 27);
 			this.EasyRadio.TabIndex = 1;
@@ -62,8 +60,7 @@
 			// MediumRadio
 			// 
 			this.MediumRadio.AutoSize = true;
-			this.MediumRadio.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.MediumRadio.Location = new System.Drawing.Point(311, 128);
+            this.MediumRadio.Font = new System.Drawing.Font("Arial", 12F); this.MediumRadio.Location = new System.Drawing.Point(311, 128);
 			this.MediumRadio.Name = "MediumRadio";
 			this.MediumRadio.Size = new System.Drawing.Size(154, 27);
 			this.MediumRadio.TabIndex = 2;
@@ -74,8 +71,8 @@
 			// HardRadio
 			// 
 			this.HardRadio.AutoSize = true;
-			this.HardRadio.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.HardRadio.Location = new System.Drawing.Point(311, 161);
+            this.HardRadio.Font = new System.Drawing.Font("Arial", 12F); this.DifficultiesLabel.Location = new System.Drawing.Point(37, 95);
+            this.HardRadio.Location = new System.Drawing.Point(311, 161);
 			this.HardRadio.Name = "HardRadio";
 			this.HardRadio.Size = new System.Drawing.Size(135, 27);
 			this.HardRadio.TabIndex = 3;
@@ -86,9 +83,8 @@
 			// DifficultiesLabel
 			// 
 			this.DifficultiesLabel.AutoSize = true;
-			this.DifficultiesLabel.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.DifficultiesLabel.Location = new System.Drawing.Point(37, 95);
-			this.DifficultiesLabel.Name = "DifficultiesLabel";
+            this.DifficultiesLabel.Font = new System.Drawing.Font("Arial", 12F);
+            this.DifficultiesLabel.Name = "DifficultiesLabel";
 			this.DifficultiesLabel.Size = new System.Drawing.Size(198, 23);
 			this.DifficultiesLabel.TabIndex = 4;
 			this.DifficultiesLabel.Text = "Choose Game Difficulties:";
@@ -96,21 +92,21 @@
 			// StartButton
 			// 
 			this.StartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.StartButton.Location = new System.Drawing.Point(116, 228);
-			this.StartButton.Name = "StartButton";
-			this.StartButton.Size = new System.Drawing.Size(119, 33);
-			this.StartButton.TabIndex = 5;
+            this.StartButton.Location = new System.Drawing.Point(150, 228);
+            this.StartButton.Name = "StartButton";
+            this.StartButton.Size = new System.Drawing.Size(130, 40);
+            this.StartButton.TabIndex = 5;
 			this.StartButton.Text = "Start";
 			this.StartButton.UseVisualStyleBackColor = true;
 			// 
 			// QuitButton
 			// 
 			this.QuitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.QuitButton.Location = new System.Drawing.Point(275, 228);
+            this.QuitButton.Location = new System.Drawing.Point(300, 228); 
 			this.QuitButton.Name = "QuitButton";
-			this.QuitButton.Size = new System.Drawing.Size(119, 33);
+            this.QuitButton.Size = new System.Drawing.Size(130, 40); 
 			this.QuitButton.TabIndex = 6;
-			this.QuitButton.Text = "Quit";
+			this.QuitButton.Text = "Exit";
 			this.QuitButton.UseVisualStyleBackColor = true;
 			// 
 			// Form2
@@ -130,6 +126,7 @@
 			this.Text = "Let\'s play Sudoku!";
 			this.ResumeLayout(false);
 			this.PerformLayout();
+
 
 		}
 

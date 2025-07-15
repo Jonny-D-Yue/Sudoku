@@ -109,41 +109,43 @@ namespace Sudoku
 			UpdateMistakeDisplay();
 		}
 
-		private void Grid_Button_Click(object sender, EventArgs e)
-		{
-			if (isGamePaused) return;
+        private void Grid_Button_Click(object sender, EventArgs e)
+        {
+            if (isGamePaused) return;
 
-			Button clicked = sender as Button;
-			Point pos = (Point)clicked.Tag;
-			int clickedRow = pos.X;
-			int clickedCol = pos.Y;
+            Button clicked = sender as Button;
+            Point pos = (Point)clicked.Tag;
+            int clickedRow = pos.X;
+            int clickedCol = pos.Y;
 
-			for (int row = 0; row < 9; row++)
-			{
-				for (int col = 0; col < 9; col++)
-				{
-					if (row == clickedRow)
-					{
-						buttons[row, col].BackColor = Color.AliceBlue;
-					}
-					else if (col == clickedCol)
-					{
-						buttons[row, col].BackColor = Color.AliceBlue;
-					}
-					else if (row / 3 == clickedRow / 3 && col / 3 == clickedCol / 3)
-					{
-						buttons[row, col].BackColor = Color.AliceBlue;
-					}
-					else
-					{
-						buttons[row, col].BackColor = Color.Transparent;
-					}
-				}
-			}
-			buttons[clickedRow, clickedCol].BackColor = Color.LightBlue;
-		}
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    if (row == clickedRow)
+                    {
+                        buttons[row, col].BackColor = Color.AliceBlue;
+                    }
+                    else if (col == clickedCol)
+                    {
+                        buttons[row, col].BackColor = Color.AliceBlue;
+                    }
+                    else if (row / 3 == clickedRow / 3 && col / 3 == clickedCol / 3)
+                    {
+                        buttons[row, col].BackColor = Color.FromArgb(240, 248, 255); // Lighter AliceBlue
+                    }
+                    else
+                    {
+                        buttons[row, col].BackColor = Color.Transparent;
+                    }
+                }
+            }
+            buttons[clickedRow, clickedCol].BackColor = Color.FromArgb(173, 216, 230); // LightBlue
+            buttons[clickedRow, clickedCol].FlatAppearance.BorderSize = 2; // Bold border for the selected cell
+            buttons[clickedRow, clickedCol].BackColor = Color.LightBlue;
+        }
 
-		private void Number_Button_Click(object sender, EventArgs e)
+        private void Number_Button_Click(object sender, EventArgs e)
 		{
 			if (isGamePaused) return;
 
@@ -243,9 +245,11 @@ namespace Sudoku
 			}
 		}
 
-		private void StartNewGame()
+        private DateTime gameStartTime;
+        private void StartNewGame()
 		{
-			using (Form2 tempForm = new Form2())
+            gameStartTime = DateTime.Now;
+            using (Form2 tempForm = new Form2())
 			{
 				tempForm.SelectedLevel = currentLevel; // Set to current level
 				int shown = tempForm.GetShownNumbersCount();
@@ -365,15 +369,13 @@ namespace Sudoku
 			EnableNumberButtons(true);
 		}
 
-		private void UpdateMistakeDisplay()
-		{
-			if (MistakeCount != null)
-			{
-				MistakeCount.Text = mistakeCount.ToString();
-			}
-		}
+        private void UpdateMistakeDisplay()
+        {
+            MistakeCount.Text = $"{mistakeCount}";
+            MistakeCount.ForeColor = mistakeCount > 0 ? Color.OrangeRed : Color.MediumSeaGreen;
+        }
 
-		private void GameOver()
+        private void GameOver()
 		{
 			TM_Base.Stop();
 			EnableNumberButtons(false);
@@ -611,8 +613,9 @@ namespace Sudoku
 
 		private void TM_Base_Tick(object sender, EventArgs e)
 		{
-
-		}
+            int seconds = (int)(DateTime.Now - gameStartTime).TotalSeconds; // Assuming gameStartTime is tracked
+            TimerDisplay.Text = $"{seconds / 60:D2}:{seconds % 60:D2}";
+        }
 
 		private void RB_Level1_CheckedChanged(object sender, EventArgs e)
 		{
@@ -623,6 +626,5 @@ namespace Sudoku
 		{
 
 		}
-
-	}
+    }
 }
