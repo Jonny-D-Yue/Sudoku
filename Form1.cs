@@ -74,40 +74,40 @@ namespace Sudoku
 				}
 			}
 
-			// Number buttons (1-9)
-			buttonWidth = 50;
-			buttonHeight = 50;
-			startX = 495;
-			startY = 115;
-			for (int row = 0; row < 3; row++)
-			{
-				for (int col = 0; col < 3; col++)
-				{
-					Button btn = new Button();
-					btn.BackColor = Color.AliceBlue;
-					btn.FlatAppearance.BorderSize = 0;
-					btn.FlatStyle = FlatStyle.Flat;
-					btn.Location = new Point(startX + col * buttonWidth + 4 * col, startY + row * buttonHeight + 4 * row);
-					btn.Name = string.Format("BTN_N{0}", row * 3 + col);
-					btn.Size = new Size(buttonWidth, buttonHeight);
-					btn.UseVisualStyleBackColor = true;
+            /// Number buttons (1-9)
+            buttonWidth = 50;
+            buttonHeight = 50;
+            startX = 495;
+            startY = 115;
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    Button btn = new Button();
+                    btn.BackColor = Color.AliceBlue;
+                    btn.FlatAppearance.BorderSize = 0;
+                    btn.FlatStyle = FlatStyle.Flat;
+                    btn.Location = new Point(startX + col * buttonWidth + 4 * col, startY + row * buttonHeight + 4 * row);
+                    btn.Name = string.Format("BTN_N{0}", row * 3 + col);
+                    btn.Size = new Size(buttonWidth, buttonHeight);
+                    btn.UseVisualStyleBackColor = true;
 
-					btn.TextAlign = ContentAlignment.MiddleCenter;
-					btn.UseCompatibleTextRendering = false;
+                    btn.TextAlign = ContentAlignment.MiddleCenter;
+                    btn.UseCompatibleTextRendering = false;
 
-					btn.Tag = new Point(row, col);
-					btn.Click += Number_Button_Click;
-					btn.Font = new Font("Arial", 24, FontStyle.Bold);
-					btn.ForeColor = Color.RoyalBlue;
-					btn.Text = (row * 3 + col + 1).ToString();
+                    btn.Tag = new Point(row, col);
+                    btn.Click += Number_Button_Click;
+                    btn.Font = new Font("Arial", 24, FontStyle.Bold);
+                    btn.ForeColor = Color.RoyalBlue;
+                    btn.Text = (row * 3 + col + 1).ToString();
 
-					btns[row, col] = btn;
-					this.Controls.Add(btn);
-				}
-			}
+                    btns[row, col] = btn;
+                    this.Controls.Add(btn);
+                }
+            }
 
-			UpdateMistakeDisplay();
-		}
+            UpdateMistakeDisplay();
+        }
 
         private void Grid_Button_Click(object sender, EventArgs e)
         {
@@ -122,6 +122,7 @@ namespace Sudoku
             {
                 for (int col = 0; col < 9; col++)
                 {
+                    buttons[row, col].FlatAppearance.BorderSize = 0;
                     if (row == clickedRow)
                     {
                         buttons[row, col].BackColor = Color.AliceBlue;
