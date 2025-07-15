@@ -30,3 +30,15 @@ D:\Users\Jianhua_Yu\OneDrive - Vancouver Community College\VCC\Courses\CSTP_1302
 D:\Users\Jianhua_Yu\OneDrive - Vancouver Community College\VCC\Courses\CSTP_1302\Project\Sudoku\obj\Debug\Sudoku.csproj.CoreCompileInputs.cache
 D:\Users\Jianhua_Yu\OneDrive - Vancouver Community College\VCC\Courses\CSTP_1302\Project\Sudoku\obj\Debug\Sudoku.exe
 D:\Users\Jianhua_Yu\OneDrive - Vancouver Community College\VCC\Courses\CSTP_1302\Project\Sudoku\obj\Debug\Sudoku.pdb
+C:\Users\ayu\Source\Repos\Sudoku\bin\Debug\Sudoku.exe.config
+C:\Users\ayu\Source\Repos\Sudoku\bin\Debug\Sudoku.exe
+C:\Users\ayu\Source\Repos\Sudoku\bin\Debug\Sudoku.pdb
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.csproj.AssemblyReference.cache
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.exe.config
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.Sudoku.resources
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.Properties.Resources.resources
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.csproj.GenerateResource.cache
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.csproj.CoreCompileInputs.cache
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.exe
+C:\Users\ayu\Source\Repos\Sudoku\obj\Debug\Sudoku.pdb
+C:\Users\ayu\source\repos\Sudoku\obj\Debug\Sudoku.Form2.resources

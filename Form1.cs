@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Sudoku;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,378 +14,615 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace Sudoku
 {
-  public partial class Sudoku : Form
-  {
-    private Button[,] buttons = new Button[9, 9];
-    private Button[,] btns = new Button[3, 3];
-    private int[,] board = new int[9, 9];           // Answer board
-    private int[,] userBoard = new int[9, 9];       // User input board
-    private int[,] levelPuzzle = new int[9, 9];
-    Random rand = new Random();
+	public partial class Sudoku : Form
+	{
+		private Button[,] buttons = new Button[9, 9];
+		private Button[,] btns = new Button[3, 3];
+		private int[,] board = new int[9, 9];           // Answer board
+		private int[,] userBoard = new int[9, 9];       // User input board
+		private int[,] levelPuzzle = new int[9, 9];
+		Random rand = new Random();
 
-    public Sudoku()
-    {
-      InitializeComponent();
-      CreateButtonGrid();
+		private bool isGamePaused = false;
+		private Form2.GameLevel currentLevel = Form2.GameLevel.Level1;
+		private int mistakeCount = 0;
+		private const int MAX_MISTAKES = 3;
 
-    }
-    private void CreateButtonGrid()
-    {
-      int buttonWidth = 47;
-      int buttonHeight = 45;
-      int startX = 8;
-      int startY = 8;
-      int spacingX = 48;
-      int spacingY = 46;
+		public Sudoku()
+		{
+			InitializeComponent();
+			CreateButtonGrid();
+		}
 
-      for (int row = 0; row < 9; row++)
-      {
-        for (int col = 0; col < 9; col++)
-        {
-          Button btn = new Button();
-          btn.BackColor = Color.Transparent;
-          btn.FlatAppearance.BorderSize = 0;
-          btn.FlatStyle = FlatStyle.Flat;
-          btn.Location = new Point(startX + col * spacingX + 3 * (col / 3), startY + row * spacingY + 3 * (row / 3));
-          btn.Name = $"R{row}C{col}";
-          btn.Size = new Size(buttonWidth, buttonHeight);
-          btn.TabIndex = row * 9 + col;
-          btn.UseVisualStyleBackColor = true;
+		// Constructor to accept selected level from Form2
+		public Sudoku(Form2.GameLevel selectedLevel) : this()
+		{
+			currentLevel = selectedLevel;
+			// Automatically start the game with the selected level
+			StartNewGame();
+		}
 
-          btn.Tag = new Point(row, col);
-          btn.Click += Grid_Button_Click;
-          btn.Font = new Font("Arial", 24);
+		private void CreateButtonGrid()
+		{
+			int buttonWidth = 47;
+			int buttonHeight = 45;
+			int startX = 8;
+			int startY = 8;
+			int spacingX = 48;
+			int spacingY = 46;
 
-          buttons[row, col] = btn;
-          PB_BackGrid.Controls.Add(btn);
-          //this.Controls.SetChildIndex(btn, 0);
-        }
-      }
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					Button btn = new Button();
+					btn.BackColor = Color.Transparent;
+					btn.FlatAppearance.BorderSize = 0;
+					btn.FlatStyle = FlatStyle.Flat;
+					btn.Location = new Point(startX + col * spacingX + 3 * (col / 3), startY + row * spacingY + 3 * (row / 3));
+					btn.Name = string.Format("R{0}C{1}", row, col);
+					btn.Size = new Size(buttonWidth, buttonHeight);
+					btn.TabIndex = row * 9 + col;
+					btn.UseVisualStyleBackColor = true;
 
-      buttonWidth = 60;
-      buttonHeight = 60;
-      startX = 480;
-      startY = 200;
-      for (int row = 0; row < 3; row++)
-      {
-        for (int col = 0; col < 3; col++)
-        {
-          Button btn = new Button();
-          btn.BackColor = Color.AliceBlue;
-          btn.FlatAppearance.BorderSize = 0;
-          btn.FlatStyle = FlatStyle.Flat;
-          btn.Location = new Point(startX + col * buttonWidth + 4 * col, startY + row * buttonHeight + 4 * row);
-          btn.Name = $"BTN_N{row * 3 + col}";
-          btn.Size = new Size(buttonWidth, buttonHeight);
-          //btn.TabIndex = row * 9 + col;
-          btn.UseVisualStyleBackColor = true;
+					btn.Tag = new Point(row, col);
+					btn.Click += Grid_Button_Click;
+					btn.Font = new Font("Arial", 24);
 
-          btn.Tag = new Point(row, col);
-          btn.Click += Number_Button_Click;
-          btn.Font = new Font("Arial", 32);
-          btn.ForeColor = Color.RoyalBlue;
-          btn.Text = $"{row * 3 + col + 1}";
+					buttons[row, col] = btn;
+					PB_BackGrid.Controls.Add(btn);
+				}
+			}
 
-          btns[row, col] = btn;
-          this.Controls.Add(btn);
+			// Number buttons (1-9)
+			buttonWidth = 50;
+			buttonHeight = 50;
+			startX = 495;
+			startY = 115;
+			for (int row = 0; row < 3; row++)
+			{
+				for (int col = 0; col < 3; col++)
+				{
+					Button btn = new Button();
+					btn.BackColor = Color.AliceBlue;
+					btn.FlatAppearance.BorderSize = 0;
+					btn.FlatStyle = FlatStyle.Flat;
+					btn.Location = new Point(startX + col * buttonWidth + 4 * col, startY + row * buttonHeight + 4 * row);
+					btn.Name = string.Format("BTN_N{0}", row * 3 + col);
+					btn.Size = new Size(buttonWidth, buttonHeight);
+					btn.UseVisualStyleBackColor = true;
 
-        }
-      }
-    }
+					btn.TextAlign = ContentAlignment.MiddleCenter;
+					btn.UseCompatibleTextRendering = false;
 
-    private void Grid_Button_Click(object sender, EventArgs e)
-    {
-      Button clicked = sender as Button;
-      Point pos = (Point)clicked.Tag;
-      //MessageBox.Show($"You clicked button：{pos.X}, {pos.Y}");
-      for (int i = 0; i < 9; i++)
-      {
-        for (int j = 0; j < 9; j++)
-        {
-          if (i == pos.X)
-          {
-            buttons[i, j].BackColor = Color.AliceBlue;
-          }
-          else if (j == pos.Y)
-          {
-            buttons[i, j].BackColor = Color.AliceBlue;
-          }
-          else if (i / 3 == pos.X / 3 && j / 3 == pos.Y / 3)
-          {
-            buttons[i, j].BackColor = Color.AliceBlue;
-          }
-          else
-          {
-            buttons[i, j].BackColor = Color.Transparent;
-          }
-        }
-      }
-      buttons[pos.X, pos.Y].BackColor = Color.LightBlue;
-    }
+					btn.Tag = new Point(row, col);
+					btn.Click += Number_Button_Click;
+					btn.Font = new Font("Arial", 24, FontStyle.Bold);
+					btn.ForeColor = Color.RoyalBlue;
+					btn.Text = (row * 3 + col + 1).ToString();
 
-    private void Number_Button_Click(object sender, EventArgs e)
-    {
-      Button clicked = sender as Button;
-      Point pos = (Point)clicked.Tag;
-      int number = pos.X * 3 + pos.Y + 1;
-      for (int i = 0; i < 9; i++)
-      {
-        for (int j = 0; j < 9; j++)
-        {
-          if (buttons[i, j].BackColor == Color.LightBlue)
-          {
-            if (levelPuzzle[i, j] == 0) // Only allow placing numbers in empty cells
-            {
-              userBoard[i, j] = number;
-              buttons[i, j].Text = number.ToString();
-              if (board[i, j] == number)
-              {
-                buttons[i, j].ForeColor = Color.Black; // Correct entry
-              }
-              else
-              {
-                buttons[i, j].ForeColor = Color.Red; // Incorrect entry
-              }
-              //buttons[i, j].BackColor = Color.Transparent; // Reset color after placing number
-            }
-            break;
-          }
-        }
-      }
-    }
+					btns[row, col] = btn;
+					this.Controls.Add(btn);
+				}
+			}
 
-    private void BTN_Start_Click(object sender, EventArgs e)
-    {
-      int shown = 40;
-      if (RB_Level2.Checked) shown = 30;
-      else if (RB_Level3.Checked) shown = 20;
+			UpdateMistakeDisplay();
+		}
 
-      board = new int[9, 9];
-      //GenerateSudoku();
-      //PrintBoard();
-      FillBoard();
-      //for (int i = 0; i < 9; i++)
-      //{
-      //  for (int j = 0; j < 9; j++)
-      //  {
-      //    buttons[i, j].Text = board[i, j] == 0 ? "" : board[i, j].ToString();
-      //    //buttons[i, j].Enabled = board[i, j] == 0; // Disable buttons with pre-filled numbers
-      //  }
-      //}
-      levelPuzzle = GeneratePuzzle(shown);
-      userBoard = (int[,])levelPuzzle.Clone();
-      DisplayPuzzle(levelPuzzle);
-      TM_Base.Start();
-      Console.WriteLine("Sudoku generated");
-    }
+		private void Grid_Button_Click(object sender, EventArgs e)
+		{
+			if (isGamePaused) return;
 
+			Button clicked = sender as Button;
+			Point pos = (Point)clicked.Tag;
+			int clickedRow = pos.X;
+			int clickedCol = pos.Y;
 
-    ////////
-    private bool IsSafe(int row, int col, int num)
-    {
-      for (int i = 0; i < 9; i++)
-      {
-        if (board[row, i] == num || board[i, col] == num)
-          return false;
-      }
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					if (row == clickedRow)
+					{
+						buttons[row, col].BackColor = Color.AliceBlue;
+					}
+					else if (col == clickedCol)
+					{
+						buttons[row, col].BackColor = Color.AliceBlue;
+					}
+					else if (row / 3 == clickedRow / 3 && col / 3 == clickedCol / 3)
+					{
+						buttons[row, col].BackColor = Color.AliceBlue;
+					}
+					else
+					{
+						buttons[row, col].BackColor = Color.Transparent;
+					}
+				}
+			}
+			buttons[clickedRow, clickedCol].BackColor = Color.LightBlue;
+		}
 
-      int startRow = row - row % 3;
-      int startCol = col - col % 3;
+		private void Number_Button_Click(object sender, EventArgs e)
+		{
+			if (isGamePaused) return;
 
-      for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; j++)
-          if (board[startRow + i, startCol + j] == num)
-            return false;
+			Button clicked = sender as Button;
+			Point pos = (Point)clicked.Tag;
+			int number = pos.X * 3 + pos.Y + 1;
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					if (buttons[row, col].BackColor == Color.LightBlue)
+					{
+						if (levelPuzzle[row, col] == 0) // Only allow placing numbers in empty cells
+						{
+							int previousNumber = userBoard[row, col];
+							bool hadPreviousEntry = previousNumber != 0;
+							bool previousWasCorrect = hadPreviousEntry && (board[row, col] == previousNumber);
 
-      return true;
-    }
+							userBoard[row, col] = number;
+							buttons[row, col].Text = number.ToString();
 
-    private bool FillBoard(int row = 0, int col = 0)
-    {
-      if (row == 9) return true;
-      if (col == 9) return FillBoard(row + 1, 0);
+							bool newIsCorrect = (board[row, col] == number);
 
-      var numbers = Enumerable.Range(1, 9).OrderBy(x => rand.Next()).ToList();
+							if (newIsCorrect)
+							{
+								buttons[row, col].ForeColor = Color.Black; // Correct entry
+							}
+							else
+							{
+								buttons[row, col].ForeColor = Color.Red; // Incorrect entry
 
-      foreach (int num in numbers)
-      {
-        if (IsSafe(row, col, num))
-        {
-          board[row, col] = num;
-          if (FillBoard(row, col + 1)) return true;
-          board[row, col] = 0;
-        }
-      }
+								// Only increment mistake count if:
+								// 1. There was no previous entry, OR
+								// 2. Previous entry was correct (now making it wrong)
+								if (!hadPreviousEntry || previousWasCorrect)
+								{
+									mistakeCount++;
+									UpdateMistakeDisplay();
 
-      return false;
-    }
+									if (mistakeCount >= MAX_MISTAKES)
+									{
+										GameOver();
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
 
+		private void EraseButton_Click(object sender, EventArgs e)
+		{
+			if (isGamePaused) return;
 
-    private bool HasAtLeastOneInEachGrid(int[,] board)
-    {
-      for (int blockRow = 0; blockRow < 3; blockRow++)
-      {
-        for (int blockCol = 0; blockCol < 3; blockCol++)
-        {
-          bool found = false;
-          for (int i = 0; i < 3; i++)
-          {
-            for (int j = 0; j < 3; j++)
-            {
-              int row = blockRow * 3 + i;
-              int col = blockCol * 3 + j;
-              if (board[row, col] != 0)
-              {
-                found = true;
-                break;
-              }
-            }
-          }
-          if (!found) return false;
-        }
-      }
-      return true;
-    }
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					if (buttons[row, col].BackColor == Color.LightBlue)
+					{
+						if (levelPuzzle[row, col] == 0) // Only allow erasing user entries
+						{
+							userBoard[row, col] = 0;
+							buttons[row, col].Text = "";
+							buttons[row, col].ForeColor = Color.Black;
+						}
+						break;
+					}
+				}
+			}
+		}
 
-    private int[,] GeneratePuzzle(int shownCount)
-    {
-      int[,] puzzle = (int[,])board.Clone();
-      int removed = 0;
+		private void BTN_Pause_Click(object sender, EventArgs e)
+		{
+			if (isGamePaused)
+			{
+				ResumeGame();
+			}
+			else
+			{
+				PauseGame();
+			}
+		}
+		private void QuitButton_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show(
+				"Are you sure you want to quit the game?",
+				"Quit Game",
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Question);
 
-      while ((81 - removed) > shownCount)
-      {
-        int r = rand.Next(0, 9);
-        int c = rand.Next(0, 9);
-        if (puzzle[r, c] != 0)
-        {
-          int temp = puzzle[r, c];
-          puzzle[r, c] = 0;
-          removed++;
+			if (result == DialogResult.Yes)
+			{
+				Application.Exit();
+			}
+		}
 
-          if (!HasAtLeastOneInEachGrid(puzzle))
-          {
-            puzzle[r, c] = temp;
-            removed--;
-          }
-        }
-      }
+		private void StartNewGame()
+		{
+			using (Form2 tempForm = new Form2())
+			{
+				tempForm.SelectedLevel = currentLevel; // Set to current level
+				int shown = tempForm.GetShownNumbersCount();
+				string levelName = tempForm.GetLevelName();
 
-      return puzzle;
-    }
+				board = new int[9, 9];
+				FillBoard();
+				levelPuzzle = GeneratePuzzle(shown);
+				userBoard = (int[,])levelPuzzle.Clone();
+				DisplayPuzzle(levelPuzzle);
 
-    private void DisplayPuzzle(int[,] puzzle)
-    {
-      for (int i = 0; i < 9; i++)
-      {
-        for (int j = 0; j < 9; j++)
-        {
-          if (buttons[i, j] == null)
-          {
-            MessageBox.Show($"⚠️ cells[{i},{j}] have not attach ");
-            continue;
-          }
+				isGamePaused = false;
+				mistakeCount = 0;
+				UpdateMistakeDisplay();
 
-          if (puzzle[i, j] != 0)
-          {
-            buttons[i, j].Text = puzzle[i, j].ToString();
-            buttons[i, j].Enabled = false;
-            //buttons[i, j].BackColor = Color.LightGray;
-          }
-          else
-          {
-            buttons[i, j].Text = "";
-            buttons[i, j].Enabled = true;
-            //buttons[i, j].BackColor = Color.White;
-          }
-        }
-      }
-    }
-    ////////
-    bool GenerateSudoku()
-    {
-      for (int row = 0; row < 9; row++)
-      {
-        for (int col = 0; col < 9; col++)
-        {
-          if (board[row, col] == 0)
-          {
-            List<int> numbers = GetShuffledNumbers();
+				TM_Base.Start();
 
-            foreach (int num in numbers)
-            {
-              if (IsValid(row, col, num))
-              {
-                board[row, col] = num;
+				EnableNumberButtons(true);
+				EraseButton.Enabled = true;
 
-                if (GenerateSudoku())
-                  return true;
+				this.Text = string.Format("Sudoku - {0}", levelName);
 
-                board[row, col] = 0;
-              }
-            }
-            return false;
-          }
-        }
-      }
-      return true; // Sudoku is solved  
-    }
+				Console.WriteLine(string.Format("Sudoku generated and started - {0} with {1} numbers shown", levelName, shown));
+			}
+		}
 
-    List<int> GetShuffledNumbers()
-    {
+		private void PauseGame()
+		{
+			isGamePaused = true;
+			TM_Base.Stop();
+			BTN_Pause.Text = "Resume";
 
-      List<int> nums = new List<int>();
-      for (int i = 1; i <= 9; i++)
-        nums.Add(i);
+			EnableNumberButtons(false);
+			HideGameGrid(true);
 
-      for (int i = 0; i < nums.Count; i++)
-      {
-        int j = rand.Next(i, nums.Count);
-        int temp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = temp;
-      }
+			Console.WriteLine("Game paused");
+		}
 
-      return nums;
-    }
+		private void ResumeGame()
+		{
+			isGamePaused = false;
+			TM_Base.Start();
+			BTN_Pause.Text = "Pause";
 
-    bool IsValid(int row, int col, int num)
-    {
-      for (int i = 0; i < 9; i++)
-      {
-        if (board[row, i] == num || board[i, col] == num)
-          return false;
-      }
+			EnableNumberButtons(true);
+			HideGameGrid(false);
 
-      int startRow = (row / 3) * 3;
-      int startCol = (col / 3) * 3;
+			Console.WriteLine("Game resumed");
+		}
 
-      for (int i = 0; i < 3; i++)
-      {
-        for (int j = 0; j < 3; j++)
-        {
-          if (board[startRow + i, startCol + j] == num)
-            return false;
-        }
-      }
+		private void EnableNumberButtons(bool enabled)
+		{
+			for (int row = 0; row < 3; row++)
+			{
+				for (int col = 0; col < 3; col++)
+				{
+					btns[row, col].Enabled = enabled;
+				}
+			}
 
-      return true;
-    }
+			if (EraseButton != null)
+			{
+				EraseButton.Enabled = enabled;
+			}
+		}
 
-    void PrintBoard()
-    {
-      for (int row = 0; row < 9; row++)
-      {
-        for (int col = 0; col < 9; col++)
-        {
-          Console.Write(board[row, col] + " ");
-        }
-        Console.WriteLine();
-      }
-    }
+		private void HideGameGrid(bool hide)
+		{
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					if (hide)
+					{
+						buttons[row, col].Text = "";
+						buttons[row, col].BackColor = Color.Gray;
+					}
+					else
+					{
+						if (levelPuzzle[row, col] != 0)
+						{
+							buttons[row, col].Text = levelPuzzle[row, col].ToString();
+						}
+						else if (userBoard[row, col] != 0)
+						{
+							buttons[row, col].Text = userBoard[row, col].ToString();
+							buttons[row, col].ForeColor = (board[row, col] == userBoard[row, col]) ? Color.Black : Color.Red;
+						}
+						else
+						{
+							buttons[row, col].Text = "";
+						}
+						buttons[row, col].BackColor = Color.Transparent;
+					}
+				}
+			}
+		}
 
-    private void TM_Base_Tick(object sender, EventArgs e)
-    {
-      
-    }
-  }
+		private void ResetGame()
+		{
+			isGamePaused = false;
+			mistakeCount = 0;
+			UpdateMistakeDisplay();
+			TM_Base.Stop();
+			BTN_Pause.Text = "Pause";
+
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					buttons[row, col].Text = "";
+					buttons[row, col].BackColor = Color.Transparent;
+					buttons[row, col].Enabled = true;
+				}
+			}
+
+			EnableNumberButtons(true);
+		}
+
+		private void UpdateMistakeDisplay()
+		{
+			if (MistakeCount != null)
+			{
+				MistakeCount.Text = mistakeCount.ToString();
+			}
+		}
+
+		private void GameOver()
+		{
+			TM_Base.Stop();
+			EnableNumberButtons(false);
+
+			DialogResult result = MessageBox.Show(
+				"Game Over! You made maximum 3 mistakes.\n\nWould you like to start a new game?",
+				"Game Over",
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Information);
+
+			if (result == DialogResult.Yes)
+			{
+				// Start a new game
+				ResetGame();
+				ShowLevelAndReStart();
+			}
+			else
+			{
+				// Player chose No - close the application
+				Application.Exit();
+			}
+		}
+
+		private void ShowLevelAndReStart()
+		{
+			using (Form2 levelForm = new Form2())
+			{
+				if (levelForm.ShowDialog() == DialogResult.OK)
+				{
+					currentLevel = levelForm.SelectedLevel;
+					StartNewGame();
+				}
+			}
+		}
+
+		////////
+		private bool IsSafe(int row, int col, int num)
+		{
+			for (int checkCol = 0; checkCol < 9; checkCol++)
+			{
+				if (board[row, checkCol] == num || board[checkCol, col] == num)
+					return false;
+			}
+
+			int startRow = row - row % 3;
+			int startCol = col - col % 3;
+
+			for (int blockRow = 0; blockRow < 3; blockRow++)
+				for (int blockCol = 0; blockCol < 3; blockCol++)
+					if (board[startRow + blockRow, startCol + blockCol] == num)
+						return false;
+
+			return true;
+		}
+
+		private bool FillBoard(int row = 0, int col = 0)
+		{
+			if (row == 9) return true;
+			if (col == 9) return FillBoard(row + 1, 0);
+
+			var numbers = Enumerable.Range(1, 9).OrderBy(x => rand.Next()).ToList();
+
+			foreach (int num in numbers)
+			{
+				if (IsSafe(row, col, num))
+				{
+					board[row, col] = num;
+					if (FillBoard(row, col + 1)) return true;
+					board[row, col] = 0;
+				}
+			}
+
+			return false;
+		}
+
+		private bool HasAtLeastOneInEachGrid(int[,] board)
+		{
+			for (int blockRow = 0; blockRow < 3; blockRow++)
+			{
+				for (int blockCol = 0; blockCol < 3; blockCol++)
+				{
+					bool found = false;
+					for (int row = 0; row < 3; row++)
+					{
+						for (int col = 0; col < 3; col++)
+						{
+							int actualRow = blockRow * 3 + row;
+							int actualCol = blockCol * 3 + col;
+							if (board[actualRow, actualCol] != 0)
+							{
+								found = true;
+								break;
+							}
+						}
+					}
+					if (!found) return false;
+				}
+			}
+			return true;
+		}
+
+		private int[,] GeneratePuzzle(int shownCount)
+		{
+			int[,] puzzle = (int[,])board.Clone();
+			int removed = 0;
+
+			while ((81 - removed) > shownCount)
+			{
+				int randomRow = rand.Next(0, 9);
+				int randomCol = rand.Next(0, 9);
+				if (puzzle[randomRow, randomCol] != 0)
+				{
+					int temp = puzzle[randomRow, randomCol];
+					puzzle[randomRow, randomCol] = 0;
+					removed++;
+
+					if (!HasAtLeastOneInEachGrid(puzzle))
+					{
+						puzzle[randomRow, randomCol] = temp;
+						removed--;
+					}
+				}
+			}
+
+			return puzzle;
+		}
+
+		private void DisplayPuzzle(int[,] puzzle)
+		{
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					if (buttons[row, col] == null)
+					{
+						MessageBox.Show(string.Format("⚠️ cells[{0},{1}] have not attach", row, col));
+						continue;
+					}
+
+					if (puzzle[row, col] != 0)
+					{
+						buttons[row, col].Text = puzzle[row, col].ToString();
+						buttons[row, col].Enabled = false;
+					}
+					else
+					{
+						buttons[row, col].Text = "";
+						buttons[row, col].Enabled = true;
+					}
+				}
+			}
+		}
+
+		////////
+		bool GenerateSudoku()
+		{
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					if (board[row, col] == 0)
+					{
+						List<int> numbers = GetShuffledNumbers();
+
+						foreach (int num in numbers)
+						{
+							if (IsValid(row, col, num))
+							{
+								board[row, col] = num;
+
+								if (GenerateSudoku())
+									return true;
+
+								board[row, col] = 0;
+							}
+						}
+						return false;
+					}
+				}
+			}
+			return true; // Sudoku is solved  
+		}
+
+		List<int> GetShuffledNumbers()
+		{
+			List<int> nums = new List<int>();
+			for (int num = 1; num <= 9; num++)
+				nums.Add(num);
+
+			for (int currentIndex = 0; currentIndex < nums.Count; currentIndex++)
+			{
+				int randomIndex = rand.Next(currentIndex, nums.Count);
+				int temp = nums[currentIndex];
+				nums[currentIndex] = nums[randomIndex];
+				nums[randomIndex] = temp;
+			}
+
+			return nums;
+		}
+
+		bool IsValid(int row, int col, int num)
+		{
+			for (int checkCol = 0; checkCol < 9; checkCol++)
+			{
+				if (board[row, checkCol] == num || board[checkCol, col] == num)
+					return false;
+			}
+
+			int startRow = (row / 3) * 3;
+			int startCol = (col / 3) * 3;
+
+			for (int blockRow = 0; blockRow < 3; blockRow++)
+			{
+				for (int blockCol = 0; blockCol < 3; blockCol++)
+				{
+					if (board[startRow + blockRow, startCol + blockCol] == num)
+						return false;
+				}
+			}
+
+			return true;
+		}
+
+		void PrintBoard()
+		{
+			for (int row = 0; row < 9; row++)
+			{
+				for (int col = 0; col < 9; col++)
+				{
+					Console.Write(board[row, col] + " ");
+				}
+				Console.WriteLine();
+			}
+		}
+
+		private void TM_Base_Tick(object sender, EventArgs e)
+		{
+
+		}
+
+		private void RB_Level1_CheckedChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void MistakeCount_Click(object sender, EventArgs e)
+		{
+
+		}
+
+	}
 }
