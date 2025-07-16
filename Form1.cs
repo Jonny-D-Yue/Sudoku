@@ -22,8 +22,11 @@ namespace Sudoku
 		private int[,] userBoard = new int[9, 9];       // User input board
 		private int[,] levelPuzzle = new int[9, 9];
 		Random rand = new Random();
+		int _100ms = 0;
+		int seconds;
 
-		private bool isGamePaused = false;
+
+        private bool isGamePaused = false;
 		private Form2.GameLevel currentLevel = Form2.GameLevel.Level1;
 		private int mistakeCount = 0;
 		private const int MAX_MISTAKES = 3;
@@ -285,6 +288,7 @@ namespace Sudoku
 
 			EnableNumberButtons(false);
 			HideGameGrid(true);
+			TM_Base.Enabled = false;
 
 			Console.WriteLine("Game paused");
 		}
@@ -297,6 +301,7 @@ namespace Sudoku
 
 			EnableNumberButtons(true);
 			HideGameGrid(false);
+			TM_Base.Enabled = true;
 
 			Console.WriteLine("Game resumed");
 		}
@@ -614,7 +619,13 @@ namespace Sudoku
 
 		private void TM_Base_Tick(object sender, EventArgs e)
 		{
-            int seconds = (int)(DateTime.Now - gameStartTime).TotalSeconds; // Assuming gameStartTime is tracked
+			//int seconds = (int)(DateTime.Now - gameStartTime).TotalSeconds; // Assuming gameStartTime is tracked
+			_100ms++;
+			if (_100ms == 9)
+			{
+			  seconds++;
+			  _100ms = 0;
+			}
             TimerDisplay.Text = $"{seconds / 60:D2}:{seconds % 60:D2}";
         }
 

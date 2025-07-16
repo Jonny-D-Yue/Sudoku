@@ -54,3 +54,4 @@ C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\De
 C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.csproj.CoreCompileInputs.cache
 C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.exe
 C:\Users\Mackenzie\OneDrive - Vancouver Community College\CSTP1302\Sudoku\obj\Debug\Sudoku.pdb
+D:\OneDrive\OneDrive - Vancouver Community College\VCC\Courses\CSTP_1302\Project\Sudoku\obj\Debug\Sudoku.Form2.resources
